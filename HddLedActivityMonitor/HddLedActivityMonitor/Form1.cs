@@ -16,12 +16,13 @@ namespace HddLedActivityMonitor
 {
     public partial class Form1 : Form
     {
-
+        #region globalne promenljive
         NotifyIcon HddTrayIcon;
         Icon hdd_busy;
         Icon hdd_idle;
         Thread HddLedWorkerThread;
-
+        #endregion
+        #region sakrivanje forme,dodeljivanje menu itema, etc ..
         public Form1()
         {
             InitializeComponent();
@@ -34,17 +35,68 @@ namespace HddLedActivityMonitor
             HddTrayIcon.Icon = hdd_idle;
             HddTrayIcon.Visible = true;
 
+            //Kreirani menu itemi i dodati u contextmenu
             MenuItem About = new MenuItem("Verzija 0.001 | Aleksandar Babic");
-            MenuItem quitMenu = new MenuItem("Quit");
+            MenuItem quitMenu = new MenuItem("Izlaz");
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.MenuItems.Add(About);
             contextMenu.MenuItems.Add(quitMenu);
-
             HddTrayIcon.ContextMenu = contextMenu;
+
+            quitMenu.Click += QuitMenu_Click;
 
             //Sakriven UI jer pravim aplikaciju koja radi samo u system trayu
             this.WindowState = FormWindowState.Minimized;
             this.ShowInTaskbar = false;
+
+            //Pokretanje threada
+            HddLedWorkerThread = new Thread(HddThreadMetoda);
+            HddLedWorkerThread.Start();
         }
+        /// <summary>
+        /// Zatvori aplikaciju pritiskom na quit dugme 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        #endregion
+        #region contextmenu Event handleri
+        private void QuitMenu_Click(object sender, EventArgs e)
+        {
+            HddLedWorkerThread.Abort();
+            HddTrayIcon.Dispose();
+            this.Close();
+        }
+
+
+        #endregion
+        #region Threadovi
+        public void HddThreadMetoda() {
+            ManagementClass driveDataClass = new ManagementClass("Win32_PerfFormattedData_PerfDisk_PhysicalDisk");
+            try
+            {
+                while (true) {
+                    //Konektovanje na driveDataClass i uzimanje svih instanci
+                    ManagementObjectCollection driveDataClassCollection = driveDataClass.GetInstances();
+                    foreach (ManagementObject obj in driveDataClassCollection) {
+                        if(obj["Name"].ToString() == "_Total") {
+                            if (Convert.ToUInt64(obj["DiskBytesPerSec"]) > 0) {
+                                HddTrayIcon.Icon = hdd_busy;
+                            }
+                            else{
+                                HddTrayIcon.Icon = hdd_idle;
+                            }
+                        }
+                    }
+
+
+                    Thread.Sleep(100);
+                }
+            }
+            catch( ThreadAbortException tbe) {
+                driveDataClass.Dispose();
+            }
+            
+        }
+        #endregion
     }
 }
