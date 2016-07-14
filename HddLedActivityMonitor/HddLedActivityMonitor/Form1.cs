@@ -14,7 +14,7 @@ using System.Threading;
 
 namespace HddLedActivityMonitor
 {
-    public partial class Form1 : Form
+    public partial class noForm : Form
     {
         #region globalne promenljive
         NotifyIcon HddTrayIcon;
@@ -23,7 +23,7 @@ namespace HddLedActivityMonitor
         Thread HddLedWorkerThread;
         #endregion
         #region sakrivanje forme,dodeljivanje menu itema, etc ..
-        public Form1()
+        public noForm()
         {
             InitializeComponent();
             
@@ -36,7 +36,7 @@ namespace HddLedActivityMonitor
             HddTrayIcon.Visible = true;
 
             //Kreirani menu itemi i dodati u contextmenu
-            MenuItem About = new MenuItem("Verzija 0.001 | Aleksandar Babic");
+            MenuItem About = new MenuItem("Verzija 1.00 BETA | Aleksandar Babic");
             MenuItem quitMenu = new MenuItem("Izlaz");
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.MenuItems.Add(About);
@@ -92,7 +92,7 @@ namespace HddLedActivityMonitor
                     Thread.Sleep(100);
                 }
             }
-            catch( ThreadAbortException tbe) {
+            catch(ThreadAbortException tbe) {
                 driveDataClass.Dispose();
             }
             

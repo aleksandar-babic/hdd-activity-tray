@@ -1,6 +1,6 @@
 ﻿namespace HddLedActivityMonitor
 {
-    partial class Form1
+    partial class noForm
     {
         /// <summary>
         /// Required designer variable.
