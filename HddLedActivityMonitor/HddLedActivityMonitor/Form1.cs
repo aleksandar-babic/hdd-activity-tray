@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Management;
+using System.Management.Instrumentation;
+using System.Collections.Specialized;
 
 namespace HddLedActivityMonitor
 {
@@ -15,6 +18,15 @@ namespace HddLedActivityMonitor
         public Form1()
         {
             InitializeComponent();
+
+            //Sakriven UI jer pravim aplikaciju koja radi samo u system trayu
+            this.WindowState = FormWindowState.Minimized;
+            this.ShowInTaskbar = false;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
